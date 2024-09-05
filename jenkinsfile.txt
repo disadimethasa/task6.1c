@@ -72,16 +72,20 @@ pipeline {
             archiveArtifacts artifacts: 'build-log.txt,test-log.txt,analysis-log.txt,scan-log.txt,deploy-staging-log.txt,integration-staging-log.txt,deploy-production-log.txt', allowEmptyArchive: true
         }
         success {
-            mail to: "disadimethasa@gmail.com",
-                 subject: "Pipeline Success - Build # ${currentBuild.number}",
-                 body: "The pipeline has successfully completed all stages. Build logs are attached.",
-                 attachmentsPattern: 'build-log.txt,test-log.txt,analysis-log.txt,scan-log.txt,deploy-staging-log.txt,integration-staging-log.txt,deploy-production-log.txt'
+            emailext(
+                to: "disadimethasa@gmail.com",
+                subject: "Pipeline Success - Build # ${currentBuild.number}",
+                body: "The pipeline has successfully completed all stages. Build logs are attached.",
+                attachmentsPattern: 'build-log.txt,test-log.txt,analysis-log.txt,scan-log.txt,deploy-staging-log.txt,integration-staging-log.txt,deploy-production-log.txt'
+            )
         }
         failure {
-            mail to: "disadimethasa@gmail.com",
-                 subject: "Pipeline Failure - Build # ${currentBuild.number}",
-                 body: "The pipeline has failed at stage ${currentStage.name}. Build logs are attached.",
-                 attachmentsPattern: 'build-log.txt,test-log.txt,analysis-log.txt,scan-log.txt,deploy-staging-log.txt,integration-staging-log.txt,deploy-production-log.txt'
+            emailext(
+                to: "disadimethasa@gmail.com",
+                subject: "Pipeline Failure - Build # ${currentBuild.number}",
+                body: "The pipeline has failed at stage ${currentStage.name}. Build logs are attached.",
+                attachmentsPattern: 'build-log.txt,test-log.txt,analysis-log.txt,scan-log.txt,deploy-staging-log.txt,integration-staging-log.txt,deploy-production-log.txt'
+            )
         }
     }
 
