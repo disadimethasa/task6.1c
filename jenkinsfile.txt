@@ -53,3 +53,26 @@ pipeline {
         }
     }
 }
+def sendNotification(stageName) {
+    def logFile = "${stageName}-log.txt"
+    
+    // Try to collect the actual logs or create a fallback
+    try {
+        sh "echo 'Logs for ${stageName} stage' > ${logFile}" // Collect actual logs from your stages here
+    } catch (Exception e) {
+        echo "Failed to collect logs for ${stageName}: ${e.message}"
+        sh "echo 'Log collection failed for ${stageName} stage.' > ${logFile}"
+    }
+    
+    // Archive the logs so they are accessible for email attachment
+    archiveArtifacts artifacts: logFile, allowEmptyArchive: true
+
+    // Send email with the archived logs as an attachment
+    emailext(
+        to: 'disadimethasa@gmail.com',
+        subject: "${stageName} Stage - ${currentBuild.result} - Build # ${currentBuild.number}",
+        body: "The ${stageName} stage has completed with status: ${currentBuild.result}. Please check the attached logs for more details.",
+        attachmentsPattern: logFile,
+        compressLog: true
+    )
+}
