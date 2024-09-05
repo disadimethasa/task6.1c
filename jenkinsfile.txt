@@ -24,7 +24,7 @@ pipeline {
                  subject: "Unit and Integration Tests Failure - Build # ${currentBuild.number}",
                  body: "The pipeline has failed at stage ${currentStage.name}. Build logs are attached."
         }
-    }
+    
             }
         }
         stage('Code Analysis') {
@@ -47,7 +47,7 @@ pipeline {
                  subject: "Security Scan Failure - Build # ${currentBuild.number}",
                  body: "The pipeline has failed at stage ${currentStage.name}. Build logs are attached."
         }
-    }
+    
             }
         }
         stage('Deploy to Staging') {
