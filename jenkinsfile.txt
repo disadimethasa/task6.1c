@@ -51,5 +51,17 @@ pipeline {
                  subject: "Pipeline Failure - Build # ${currentBuild.number}",
                  body: "The pipeline has failed at stage ${currentStage.name}. Build logs are attached."
         }
+def sendNotification(stageName, stageResult) {
+    def logFile = "${stageName}-log.txt"
+    sh "echo 'Logs for ${stageName} stage' > ${logFile}" // Collect actual logs from your stages here
+    
+    emailext(
+        to: 'disadimethasa@gmail.com',
+        subject: "${stageName} Stage - ${stageResult} - Build # ${currentBuild.number}",
+        body: "The ${stageName} stage has completed with status: ${stageResult}. Please check the attached logs for more details.",
+        attachmentsPattern: "${logFile}",
+        compressLog: true
+    )
+}
     }
 }
