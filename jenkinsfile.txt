@@ -33,21 +33,27 @@ pipeline {
     post {
         always {
             script {
-                // Capture the console output (pipeline logs) and save it to a file
-                def logFile = "build-log-${currentBuild.number}.txt"
-                def logContent = currentBuild.rawBuild.getLog(1000).join("\n")
-                writeFile file: logFile, text: logContent
+                try {
+                    // Capture the last 1000 lines of the build log
+                    def logFile = "build-log-${currentBuild.number}.txt"
+                    def logContent = currentBuild.rawBuild.getLog(1000).join("\n")
 
-                // Archive the log file for Jenkins
-                archiveArtifacts artifacts: logFile
+                    // Write the log to a file
+                    writeFile file: logFile, text: logContent
 
-                // Send the email with the log file attached
-                emailext(
-                    to: 'disadimethasa@gmail.com',
-                    subject: "Pipeline ${currentBuild.currentResult} - Build #${currentBuild.number}",
-                    body: "The pipeline has completed with result: ${currentBuild.currentResult}. Please find the build logs attached.",
-                    attachmentsPattern: logFile
-                )
+                    // Archive the log file in Jenkins
+                    archiveArtifacts artifacts: logFile
+
+                    // Send an email with the log file attached
+                    emailext(
+                        to: 'disadimethasa@gmail.com',
+                        subject: "Pipeline ${currentBuild.currentResult} - Build #${currentBuild.number}",
+                        body: "The pipeline has completed with result: ${currentBuild.currentResult}. Please find the build logs attached.",
+                        attachmentsPattern: logFile
+                    )
+                } catch (Exception e) {
+                    echo "Error occurred while trying to capture and email build logs: ${e.message}"
+                }
             }
         }
     }
