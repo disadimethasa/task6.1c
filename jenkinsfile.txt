@@ -5,8 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    // Run build and capture logs
-                    def buildLog = sh(script: 'mvn clean install', returnStdout: true).trim()
+                    def buildLog = bat(script: 'mvn clean install', returnStdout: true).trim()
                     writeFile file: 'build-log.txt', text: buildLog
                 }
             }
@@ -14,8 +13,7 @@ pipeline {
         stage('Unit and Integration Tests') {
             steps {
                 script {
-                    // Capture unit and integration test logs
-                    def testLog = sh(script: 'echo "Running unit tests with JavaUnit..."', returnStdout: true).trim()
+                    def testLog = bat(script: 'echo "Running unit tests with JavaUnit..."', returnStdout: true).trim()
                     writeFile file: 'test-log.txt', text: testLog
                 }
             }
@@ -23,8 +21,7 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 script {
-                    // Capture code analysis logs
-                    def analysisLog = sh(script: 'echo "Analyzing code quality with SonarQube..."', returnStdout: true).trim()
+                    def analysisLog = bat(script: 'echo "Analyzing code quality with SonarQube..."', returnStdout: true).trim()
                     writeFile file: 'analysis-log.txt', text: analysisLog
                 }
             }
@@ -32,8 +29,7 @@ pipeline {
         stage('Security Scan') {
             steps {
                 script {
-                    // Capture security scan logs
-                    def scanLog = sh(script: 'echo "Scanning for vulnerabilities with SAST scanner..."', returnStdout: true).trim()
+                    def scanLog = bat(script: 'echo "Scanning for vulnerabilities with SAST scanner..."', returnStdout: true).trim()
                     writeFile file: 'scan-log.txt', text: scanLog
                 }
             }
@@ -41,8 +37,7 @@ pipeline {
         stage('Deploy to Staging') {
             steps {
                 script {
-                    // Capture deployment logs
-                    def deployLog = sh(script: 'echo "Deploying application to staging server using AWS..."', returnStdout: true).trim()
+                    def deployLog = bat(script: 'echo "Deploying application to staging server using AWS..."', returnStdout: true).trim()
                     writeFile file: 'deploy-log.txt', text: deployLog
                 }
             }
