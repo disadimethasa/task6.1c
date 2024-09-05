@@ -15,18 +15,20 @@ pipeline {
             post {
                 success {
                     script {
+                        def buildLogs = currentBuild.rawBuild.getLog(100).join('\n')
                         emailext to: "disadimethasa@gmail.com",
                                  subject: "Unit and Integration Tests Success - Build # ${currentBuild.number}",
                                  body: "The unit and integration tests have completed successfully. Build logs are attached.",
-                                 attachmentsPattern: '**/logs/*.log'
+                                 attachmentsPattern: '**/build/*.log'
                     }
                 }
                 failure {
                     script {
+                        def buildLogs = currentBuild.rawBuild.getLog(100).join('\n')
                         emailext to: "disadimethasa@gmail.com",
                                  subject: "Unit and Integration Tests Failure - Build # ${currentBuild.number}",
                                  body: "The unit and integration tests have failed. Build logs are attached.",
-                                 attachmentsPattern: '**/logs/*.log'
+                                 attachmentsPattern: '**/build/*.log'
                     }
                 }
             }
@@ -43,18 +45,20 @@ pipeline {
             post {
                 success {
                     script {
+                        def buildLogs = currentBuild.rawBuild.getLog(100).join('\n')
                         emailext to: "disadimethasa@gmail.com",
                                  subject: "Security Scan Success - Build # ${currentBuild.number}",
                                  body: "The security scan has completed successfully. Build logs are attached.",
-                                 attachmentsPattern: '**/logs/*.log'
+                                 attachmentsPattern: '**/build/*.log'
                     }
                 }
                 failure {
                     script {
+                        def buildLogs = currentBuild.rawBuild.getLog(100).join('\n')
                         emailext to: "disadimethasa@gmail.com",
                                  subject: "Security Scan Failure - Build # ${currentBuild.number}",
                                  body: "The security scan has failed. Build logs are attached.",
-                                 attachmentsPattern: '**/logs/*.log'
+                                 attachmentsPattern: '**/build/*.log'
                     }
                 }
             }
@@ -73,6 +77,19 @@ pipeline {
             steps {
                 echo 'Deploying application to production server using AWS tools...'
             }
+        }
+    }
+
+    post {
+        success {
+            mail to: "disadimethasa@gmail.com",
+                 subject: "Pipeline Success - Build # ${currentBuild.number}",
+                 body: "The pipeline has successfully completed all stages. Build logs are attached."
+        }
+        failure {
+            mail to: "disadimethasa@gmail.com",
+                 subject: "Pipeline Failure - Build # ${currentBuild.number}",
+                 body: "The pipeline has failed at stage ${currentStage.name}. Build logs are attached."
         }
     }
 }
