@@ -14,7 +14,7 @@ pipeline {
             }
             post {
                 always {
-                    sendNotification('Unit and Integration Tests', currentBuild.result)
+                    sendNotification('Unit and Integration Tests')
                 }
             }
         }
@@ -29,7 +29,7 @@ pipeline {
             }
             post {
                 always {
-                    sendNotification('Security Scan', currentBuild.result)
+                    sendNotification('Security Scan')
                 }
             }
         }
@@ -44,7 +44,7 @@ pipeline {
             }
             post {
                 always {
-                    sendNotification('Integration Tests on Staging', currentBuild.result)
+                    sendNotification('Integration Tests on Staging')
                 }
             }
         }
@@ -69,17 +69,23 @@ pipeline {
     }
 }
 
-// The sendNotification function is moved outside the pipeline block
-def sendNotification(stageName, stageResult) {
+def sendNotification(stageName) {
     def logFile = "${stageName}-log.txt"
-    sh "echo 'Logs for ${stageName} stage' > ${logFile}" // Collect actual logs from your stages here
     
+    try {
+        sh "echo 'Logs for ${stageName} stage' > ${logFile}" 
+    } catch (Exception e) {
+        echo "Failed to collect logs for ${stageName}: ${e.message}"
+        sh "echo 'Log collection failed for ${stageName} stage.' > ${logFile}"
+    }
+    
+    archiveArtifacts artifacts: logFile, allowEmptyArchive: true
+
     emailext(
         to: 'disadimethasa@gmail.com',
-        subject: "${stageName} Stage - ${stageResult} - Build # ${currentBuild.number}",
-        body: "The ${stageName} stage has completed with status: ${stageResult}. Please check the attached logs for more details.",
-        attachmentsPattern: "${logFile}",
+        subject: "${stageName} Stage - ${currentBuild.result} - Build # ${currentBuild.number}",
+        body: "The ${stageName} stage has completed with status: ${currentBuild.result}. Please check the attached logs for more details.",
+        attachmentsPattern: logFile,
         compressLog: true
     )
 }
-
