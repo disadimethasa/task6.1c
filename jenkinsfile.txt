@@ -34,23 +34,29 @@ pipeline {
         always {
             script {
                 try {
-                    // Capture the last 1000 lines of the build log
+                    // Capture the console output (pipeline logs) and save it to a file
                     def logFile = "build-log-${currentBuild.number}.txt"
                     def logContent = currentBuild.rawBuild.getLog(1000).join("\n")
-
-                    // Write the log to a file
                     writeFile file: logFile, text: logContent
 
                     // Archive the log file in Jenkins
                     archiveArtifacts artifacts: logFile
+
+                    // Debugging message
+                    echo "Sending email notification..."
 
                     // Send an email with the log file attached
                     emailext(
                         to: 'disadimethasa@gmail.com',
                         subject: "Pipeline ${currentBuild.currentResult} - Build #${currentBuild.number}",
                         body: "The pipeline has completed with result: ${currentBuild.currentResult}. Please find the build logs attached.",
-                        attachmentsPattern: logFile
+                        attachmentsPattern: logFile,
+                        mimeType: 'text/plain',
+                        debug: true
                     )
+
+                    // Debugging message
+                    echo "Email sent successfully."
                 } catch (Exception e) {
                     echo "Error occurred while trying to capture and email build logs: ${e.message}"
                 }
