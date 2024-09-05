@@ -65,7 +65,7 @@ pipeline {
 
                     // Send email notifications for the test and security scan stages
                     emailext(
-                        to: 'your-email@example.com',
+                        to: 'disadimethasa@gmail.com',
                         subject: "Pipeline ${currentBuild.currentResult} - Build #${currentBuild.number}",
                         body: "The pipeline has completed with result: ${currentBuild.currentResult}. Please find the build logs attached.",
                         attachmentsPattern: logFiles.join(', ')
