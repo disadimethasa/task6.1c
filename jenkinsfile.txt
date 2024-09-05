@@ -4,18 +4,13 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Maven is building your code...' 
+                echo 'Maven is building you code...' 
             }
         }
         stage('Unit and Integration Tests') {
             steps {
                 echo 'Running unit tests with JavaUnit...' 
                 echo 'Running integration tests with Selenium...' 
-            }
-            post {
-                always {
-                    sendNotification('Unit and Integration Tests')
-                }
             }
         }
         stage('Code Analysis') {
@@ -25,32 +20,22 @@ pipeline {
         }
         stage('Security Scan') {
             steps {
-                echo 'Scanning for vulnerabilities with SAST scanner...'
-            }
-            post {
-                always {
-                    sendNotification('Security Scan')
-                }
+                echo 'Scanning for vulnerabilities with SAST scanner..'
             }
         }
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying application to staging server using AWS...'
+                echo 'Deploying application to staging server using AWS..'
             }
         }
         stage('Integration Tests on Staging') {
             steps {
                 echo 'Running integration tests on staging environment...'
             }
-            post {
-                always {
-                    sendNotification('Integration Tests on Staging')
-                }
-            }
         }
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying application to production server using AWS tools...'
+                echo 'Deploying application to production server using AWS tools..'
             }
         }
     }
@@ -64,28 +49,7 @@ pipeline {
         failure {
             mail to: "disadimethasa@gmail.com",
                  subject: "Pipeline Failure - Build # ${currentBuild.number}",
-                 body: "The pipeline has failed. Please check the attached logs for more details."
+                 body: "The pipeline has failed at stage ${currentStage.name}. Build logs are attached."
         }
     }
-}
-
-def sendNotification(stageName) {
-    def logFile = "${stageName}-log.txt"
-    
-    try {
-        sh "echo 'Logs for ${stageName} stage' > ${logFile}" 
-    } catch (Exception e) {
-        echo "Failed to collect logs for ${stageName}: ${e.message}"
-        sh "echo 'Log collection failed for ${stageName} stage.' > ${logFile}"
-    }
-    
-    archiveArtifacts artifacts: logFile, allowEmptyArchive: true
-
-    emailext(
-        to: 'disadimethasa@gmail.com',
-        subject: "${stageName} Stage - ${currentBuild.result} - Build # ${currentBuild.number}",
-        body: "The ${stageName} stage has completed with status: ${currentBuild.result}. Please check the attached logs for more details.",
-        attachmentsPattern: logFile,
-        compressLog: true
-    )
 }
