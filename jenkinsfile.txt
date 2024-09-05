@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    
+
     stages {
         stage('Build') {
             steps {
@@ -14,16 +14,20 @@ pipeline {
             }
             post {
                 success {
-                    emailext attachLog: true,
-                             body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
-                             recipientProviders: [developers(), requestor()],
-                             subject: "Unit and Integration Tests ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+                    script {
+                        emailext to: "disadimethasa@gmail.com",
+                                 subject: "Unit and Integration Tests Success - Build # ${currentBuild.number}",
+                                 body: "The unit and integration tests have completed successfully. Build logs are attached.",
+                                 attachmentsPattern: '**/logs/*.log'
+                    }
                 }
                 failure {
-                    emailext attachLog: true,
-                             body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
-                             recipientProviders: [developers(), requestor()],
-                             subject: "Unit and Integration Tests ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+                    script {
+                        emailext to: "disadimethasa@gmail.com",
+                                 subject: "Unit and Integration Tests Failure - Build # ${currentBuild.number}",
+                                 body: "The unit and integration tests have failed. Build logs are attached.",
+                                 attachmentsPattern: '**/logs/*.log'
+                    }
                 }
             }
         }
@@ -38,16 +42,20 @@ pipeline {
             }
             post {
                 success {
-                    emailext attachLog: true,
-                             body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
-                             recipientProviders: [developers(), requestor()],
-                             subject: "Security Scan ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+                    script {
+                        emailext to: "disadimethasa@gmail.com",
+                                 subject: "Security Scan Success - Build # ${currentBuild.number}",
+                                 body: "The security scan has completed successfully. Build logs are attached.",
+                                 attachmentsPattern: '**/logs/*.log'
+                    }
                 }
                 failure {
-                    emailext attachLog: true,
-                             body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
-                             recipientProviders: [developers(), requestor()],
-                             subject: "Security Scan ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+                    script {
+                        emailext to: "disadimethasa@gmail.com",
+                                 subject: "Security Scan Failure - Build # ${currentBuild.number}",
+                                 body: "The security scan has failed. Build logs are attached.",
+                                 attachmentsPattern: '**/logs/*.log'
+                    }
                 }
             }
         }
@@ -65,21 +73,6 @@ pipeline {
             steps {
                 echo 'Deploying application to production server using AWS tools...'
             }
-        }
-    }
-  
-    post {
-        success {
-            emailext attachLog: true,
-                     body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
-                     recipientProviders: [developers(), requestor()],
-                     subject: "Pipeline ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
-        }
-        failure {
-            emailext attachLog: true,
-                     body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
-                     recipientProviders: [developers(), requestor()],
-                     subject: "Pipeline ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
         }
     }
 }
