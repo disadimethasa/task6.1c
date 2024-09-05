@@ -68,6 +68,7 @@ pipeline {
     }
   
     post {
+    archiveArtifacts artifacts: 'build-log.txt,test-log.txt,analysis-log.txt,scan-log.txt,deploy-staging-log.txt,integration-staging-log.txt,deploy-production-log.txt', allowEmptyArchive: true
         success {
             mail to: "disadimethasa@gmail.com",
                  subject: "Pipeline Success - Build # ${currentBuild.number}",
