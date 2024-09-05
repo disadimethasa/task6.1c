@@ -74,6 +74,9 @@ pipeline {
                     // Archive all relevant log files
                     archiveArtifacts artifacts: 'build-log.txt, test-log.txt, analysis-log.txt, scan-log.txt, deploy-staging-log.txt, integration-staging-log.txt, deploy-production-log.txt', allowEmptyArchive: true
                     
+                    // Log message indicating that email is being sent
+                    echo 'Sending email with attachments...'
+
                     // Send email with attachments
                     emailext(
                         to: 'disadimethasa@gmail.com',
@@ -81,6 +84,9 @@ pipeline {
                         body: "The pipeline has completed with result: ${currentBuild.currentResult}. Please find the build logs attached.",
                         attachmentsPattern: 'build-log.txt, test-log.txt, analysis-log.txt, scan-log.txt, deploy-staging-log.txt, integration-staging-log.txt, deploy-production-log.txt'
                     )
+                    
+                    echo 'Email sent successfully.'
+
                 } catch (Exception e) {
                     echo "Error occurred while trying to capture and email build logs: ${e.message}"
                 }
