@@ -4,18 +4,18 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Maven is building your code...'
+                echo 'Maven is building your code...' 
             }
         }
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running unit tests with JavaUnit...'
-                echo 'Running integration tests with Selenium...'
+                echo 'Running unit tests with JavaUnit...' 
+                echo 'Running integration tests with Selenium...' 
             }
         }
         stage('Code Analysis') {
             steps {
-                echo 'Analyzing code quality with SonarQube...'
+                echo 'Analyzing code quality with SonarQube...' 
             }
         }
         stage('Security Scan') {
@@ -28,8 +28,18 @@ pipeline {
                 echo 'Deploying application to staging server using AWS...'
             }
         }
+        stage('Integration Tests on Staging') {
+            steps {
+                echo 'Running integration tests on staging environment...'
+            }
+        }
+        stage('Deploy to Production') {
+            steps {
+                echo 'Deploying application to production server using AWS tools...'
+            }
+        }
     }
-
+  
     post {
         always {
             script {
@@ -42,21 +52,13 @@ pipeline {
                     // Archive the log file in Jenkins
                     archiveArtifacts artifacts: logFile
 
-                    // Debugging message
-                    echo "Sending email notification..."
-
                     // Send an email with the log file attached
                     emailext(
                         to: 'disadimethasa@gmail.com',
                         subject: "Pipeline ${currentBuild.currentResult} - Build #${currentBuild.number}",
                         body: "The pipeline has completed with result: ${currentBuild.currentResult}. Please find the build logs attached.",
-                        attachmentsPattern: logFile,
-                        mimeType: 'text/plain',
-                        debug: true
+                        attachmentsPattern: logFile
                     )
-
-                    // Debugging message
-                    echo "Email sent successfully."
                 } catch (Exception e) {
                     echo "Error occurred while trying to capture and email build logs: ${e.message}"
                 }
