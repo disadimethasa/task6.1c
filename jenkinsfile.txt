@@ -4,42 +4,51 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                script {
-                    def buildLog = bat(script: 'mvn clean install', returnStdout: true).trim()
-                    writeFile file: 'build-log.txt', text: buildLog
-                }
+                echo 'Stage 1: Build'
+                echo 'Task: Build the code using a build automation tool to compile and package your code.'
+                echo 'Tool: Maven (e.g., mvn clean install)'
             }
         }
         stage('Unit and Integration Tests') {
             steps {
-                script {
-                    def testLog = bat(script: 'echo "Running unit tests with JavaUnit..."', returnStdout: true).trim()
-                    writeFile file: 'test-log.txt', text: testLog
-                }
+                echo 'Stage 2: Unit and Integration Tests'
+                echo 'Task: Run unit tests to ensure the code functions as expected and run integration tests to ensure the different components of the application work together as expected.'
+                echo 'Tools: JUnit for unit tests (e.g., java -jar junit-platform-console-standalone.jar); Selenium for integration tests (e.g., selenium-server-standalone.jar)'
             }
         }
         stage('Code Analysis') {
             steps {
-                script {
-                    def analysisLog = bat(script: 'echo "Analyzing code quality with SonarQube..."', returnStdout: true).trim()
-                    writeFile file: 'analysis-log.txt', text: analysisLog
-                }
+                echo 'Stage 3: Code Analysis'
+                echo 'Task: Integrate a code analysis tool to analyze the code and ensure it meets industry standards.'
+                echo 'Tool: SonarQube (e.g., sonar-scanner)'
             }
         }
         stage('Security Scan') {
             steps {
-                script {
-                    def scanLog = bat(script: 'echo "Scanning for vulnerabilities with SAST scanner..."', returnStdout: true).trim()
-                    writeFile file: 'scan-log.txt', text: scanLog
-                }
+                echo 'Stage 4: Security Scan'
+                echo 'Task: Perform a security scan on the code using a tool to identify any vulnerabilities.'
+                echo 'Tool: OWASP ZAP (e.g., zap-cli or OWASP ZAP Docker image)'
             }
         }
         stage('Deploy to Staging') {
             steps {
-                script {
-                    def deployLog = bat(script: 'echo "Deploying application to staging server using AWS..."', returnStdout: true).trim()
-                    writeFile file: 'deploy-log.txt', text: deployLog
-                }
+                echo 'Stage 5: Deploy to Staging'
+                echo 'Task: Deploy the application to a staging server.'
+                echo 'Tool: AWS EC2 instance (e.g., AWS CLI commands to deploy, e.g., aws ec2 deploy)'
+            }
+        }
+        stage('Integration Tests on Staging') {
+            steps {
+                echo 'Stage 6: Integration Tests on Staging'
+                echo 'Task: Run integration tests on the staging environment to ensure the application functions as expected in a production-like environment.'
+                echo 'Tools: JUnit and Selenium (similar to unit and integration tests but targeted at the staging environment)'
+            }
+        }
+        stage('Deploy to Production') {
+            steps {
+                echo 'Stage 7: Deploy to Production'
+                echo 'Task: Deploy the application to a production server.'
+                echo 'Tool: AWS EC2 instance (e.g., AWS CLI commands to deploy, e.g., aws ec2 deploy)'
             }
         }
     }
@@ -54,9 +63,9 @@ pipeline {
                         archiveArtifacts artifacts: logFile
                     }
 
-                    // Send an email with the log files attached
+                    // Send email notifications for the test and security scan stages
                     emailext(
-                        to: 'disadimethasa@gmail.com',
+                        to: 'your-email@example.com',
                         subject: "Pipeline ${currentBuild.currentResult} - Build #${currentBuild.number}",
                         body: "The pipeline has completed with result: ${currentBuild.currentResult}. Please find the build logs attached.",
                         attachmentsPattern: logFiles.join(', ')
