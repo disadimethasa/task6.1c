@@ -40,17 +40,9 @@ pipeline {
         }
     }
   
-    post {
-                always {
-                    script {
-                        // Send email notification with test logs
-                        emailext (
-                            to: 'disadimethasa@gmail.com',
-                            subject: "Pipeline Success - Build # ${currentBuild.number}",
-                             body: "The pipeline has completed all stages. Build logs are attached."
-
-                            attachmentsPattern: '**/target/surefire-reports/*.xml'
-                        )
-                    }
-                }
+    emailext (
+    to: 'example@example.com',
+    subject: 'Formatted Email Report',
+    body: emailBody,
+    attachmentsPattern: '**/target/surefire-reports/*.xml')
 }
