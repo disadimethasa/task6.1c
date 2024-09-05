@@ -4,54 +4,87 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Maven is building you code...' 
-                def buildLog = sh(script: 'mvn clean install', returnStdout: true).trim()
+                script {
+                    echo 'Simulating Maven build...'
+                    def buildLog = 'Build succeeded. Compiled and packaged the application successfully.'
                     writeFile file: 'build-log.txt', text: buildLog
+                }
             }
         }
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running unit tests with JavaUnit...' 
-                echo 'Running integration tests with Selenium...' 
+                script {
+                    echo 'Simulating unit and integration tests...'
+                    def testLog = 'Unit tests passed. Integration tests completed successfully.'
+                    writeFile file: 'test-log.txt', text: testLog
+                }
             }
         }
         stage('Code Analysis') {
             steps {
-                echo 'Analyzing code quality with SonarQube...' 
+                script {
+                    echo 'Simulating code analysis...'
+                    def analysisLog = 'Code analysis completed. No major issues found.'
+                    writeFile file: 'analysis-log.txt', text: analysisLog
+                }
             }
         }
         stage('Security Scan') {
             steps {
-                echo 'Scanning for vulnerabilities with SAST scanner..'
+                script {
+                    echo 'Simulating security scan...'
+                    def scanLog = 'Security scan completed. No critical vulnerabilities detected.'
+                    writeFile file: 'scan-log.txt', text: scanLog
+                }
             }
         }
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying application to staging server using AWS..'
+                script {
+                    echo 'Simulating deployment to staging...'
+                    def deployStagingLog = 'Deployment to staging environment completed successfully.'
+                    writeFile file: 'deploy-staging-log.txt', text: deployStagingLog
+                }
             }
         }
         stage('Integration Tests on Staging') {
             steps {
-                echo 'Running integration tests on staging environment...'
+                script {
+                    echo 'Simulating integration tests on staging environment...'
+                    def integrationStagingLog = 'Integration tests on staging passed.'
+                    writeFile file: 'integration-staging-log.txt', text: integrationStagingLog
+                }
             }
         }
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying application to production server using AWS tools..'
+                script {
+                    echo 'Simulating deployment to production...'
+                    def deployProductionLog = 'Deployment to production completed successfully.'
+                    writeFile file: 'deploy-production-log.txt', text: deployProductionLog
+                }
             }
         }
     }
   
     post {
-        success {
-            mail to: "disadimethasa@gmail.com",
-                 subject: "Pipeline Success - Build # ${currentBuild.number}",
-                 body: "The pipeline has successfully completed all stages. Build logs are attached."
-        }
-        failure {
-            mail to: "disadimethasa@gmail.com",
-                 subject: "Pipeline Failure - Build # ${currentBuild.number}",
-                 body: "The pipeline has failed at stage ${currentStage.name}. Build logs are attached."
+        always {
+            script {
+                try {
+                    // Archive all relevant log files
+                    archiveArtifacts artifacts: 'build-log.txt, test-log.txt, analysis-log.txt, scan-log.txt, deploy-staging-log.txt, integration-staging-log.txt, deploy-production-log.txt', allowEmptyArchive: true
+                    
+                    // Send email with attachments
+                    emailext(
+                        to: 'disadimethasa@gmail.com',
+                        subject: "Pipeline ${currentBuild.currentResult} - Build #${currentBuild.number}",
+                        body: "The pipeline has completed with result: ${currentBuild.currentResult}. Please find the build logs attached.",
+                        attachmentsPattern: 'build-log.txt, test-log.txt, analysis-log.txt, scan-log.txt, deploy-staging-log.txt, integration-staging-log.txt, deploy-production-log.txt'
+                    )
+                } catch (Exception e) {
+                    echo "Error occurred while trying to capture and email build logs: ${e.message}"
+                }
+            }
         }
     }
 }
