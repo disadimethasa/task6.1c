@@ -15,7 +15,7 @@ pipeline {
                 script {
                     echo 'Running unit tests with JavaUnit...'
                     echo 'Running integration tests with Selenium...'
-                    writeFile file: 'test-log.txt', text: 'Unit and integration tests completed.'
+                    //writeFile file: 'test-log.txt', text: 'Unit and integration tests completed.'
                 }
             }
         }
@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                     echo 'Analyzing code quality with SonarQube...'
-                    writeFile file: 'code-analysis-log.txt', text: 'Code analysis completed successfully.'
+                    //writeFile file: 'code-analysis-log.txt', text: 'Code analysis completed successfully.'
                 }
             }
         }
@@ -31,7 +31,7 @@ pipeline {
             steps {
                 script {
                     echo 'Scanning for vulnerabilities with SAST scanner...'
-                    writeFile file: 'security-scan-log.txt', text: 'Security scan completed successfully.'
+                   // writeFile file: 'security-scan-log.txt', text: 'Security scan completed successfully.'
                 }
             }
         }
@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying application to staging server using AWS...'
-                    writeFile file: 'deploy-staging-log.txt', text: 'Deployment to staging completed successfully.'
+                    //writeFile file: 'deploy-staging-log.txt', text: 'Deployment to staging completed successfully.'
                 }
             }
         }
@@ -47,7 +47,7 @@ pipeline {
             steps {
                 script {
                     echo 'Running integration tests on staging environment...'
-                    writeFile file: 'integration-staging-log.txt', text: 'Integration tests on staging passed.'
+                   // writeFile file: 'integration-staging-log.txt', text: 'Integration tests on staging passed.'
                 }
             }
         }
@@ -55,23 +55,22 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying application to production server using AWS tools...'
-                    writeFile file: 'deploy-production-log.txt', text: 'Deployment to production completed successfully.'
+                   // writeFile file: 'deploy-production-log.txt', text: 'Deployment to production completed successfully.'
                 }
             }
         }
     }
   
     post {
-        always {
+        /* always {
             archiveArtifacts artifacts: '*.txt', allowEmptyArchive: true
-        }
+        }*/
         success {
             emailext(
                 to: "disadimethasa@gmail.com",
                 subject: "Pipeline Success - Build # ${currentBuild.number}",
                 body: "The pipeline has successfully completed all stages. Build logs are attached.",
-                attachmentsPattern: '*.txt',
-                replyTo: "no-reply@yourdomain.com" // Optional: Specify a "reply-to" address if necessary
+               // attachmentsPattern: '*.txt',
             )
         }
         failure {
@@ -79,8 +78,7 @@ pipeline {
                 to: "disadimethasa@gmail.com",
                 subject: "Pipeline Failure - Build # ${currentBuild.number}",
                 body: "The pipeline has failed at stage ${currentStage.name}. Build logs are attached.",
-                attachmentsPattern: '*.txt',
-                replyTo: "no-reply@yourdomain.com" // Optional: Specify a "reply-to" address if necessary
+                //attachmentsPattern: '*.txt',
             )
         }
     }
