@@ -5,6 +5,8 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Maven is building you code...' 
+                def buildLog = sh(script: 'mvn clean install', returnStdout: true).trim()
+                    writeFile file: 'build-log.txt', text: buildLog
             }
         }
         stage('Unit and Integration Tests') {
