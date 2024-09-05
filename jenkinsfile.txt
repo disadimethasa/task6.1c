@@ -4,38 +4,47 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Maven is building your code...' 
+                script {
+                    // Run build and capture logs
+                    def buildLog = sh(script: 'mvn clean install', returnStdout: true).trim()
+                    writeFile file: 'build-log.txt', text: buildLog
+                }
             }
         }
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running unit tests with JavaUnit...' 
-                echo 'Running integration tests with Selenium...' 
+                script {
+                    // Capture unit and integration test logs
+                    def testLog = sh(script: 'echo "Running unit tests with JavaUnit..."', returnStdout: true).trim()
+                    writeFile file: 'test-log.txt', text: testLog
+                }
             }
         }
         stage('Code Analysis') {
             steps {
-                echo 'Analyzing code quality with SonarQube...' 
+                script {
+                    // Capture code analysis logs
+                    def analysisLog = sh(script: 'echo "Analyzing code quality with SonarQube..."', returnStdout: true).trim()
+                    writeFile file: 'analysis-log.txt', text: analysisLog
+                }
             }
         }
         stage('Security Scan') {
             steps {
-                echo 'Scanning for vulnerabilities with SAST scanner...'
+                script {
+                    // Capture security scan logs
+                    def scanLog = sh(script: 'echo "Scanning for vulnerabilities with SAST scanner..."', returnStdout: true).trim()
+                    writeFile file: 'scan-log.txt', text: scanLog
+                }
             }
         }
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying application to staging server using AWS...'
-            }
-        }
-        stage('Integration Tests on Staging') {
-            steps {
-                echo 'Running integration tests on staging environment...'
-            }
-        }
-        stage('Deploy to Production') {
-            steps {
-                echo 'Deploying application to production server using AWS tools...'
+                script {
+                    // Capture deployment logs
+                    def deployLog = sh(script: 'echo "Deploying application to staging server using AWS..."', returnStdout: true).trim()
+                    writeFile file: 'deploy-log.txt', text: deployLog
+                }
             }
         }
     }
@@ -44,20 +53,18 @@ pipeline {
         always {
             script {
                 try {
-                    // Capture the console output (pipeline logs) and save it to a file
-                    def logFile = "build-log-${currentBuild.number}.txt"
-                    def logContent = currentBuild.rawBuild.getLog(1000).join("\n")
-                    writeFile file: logFile, text: logContent
+                    // Collect all log files
+                    def logFiles = ['build-log.txt', 'test-log.txt', 'analysis-log.txt', 'scan-log.txt', 'deploy-log.txt']
+                    logFiles.each { logFile ->
+                        archiveArtifacts artifacts: logFile
+                    }
 
-                    // Archive the log file in Jenkins
-                    archiveArtifacts artifacts: logFile
-
-                    // Send an email with the log file attached
+                    // Send an email with the log files attached
                     emailext(
                         to: 'disadimethasa@gmail.com',
                         subject: "Pipeline ${currentBuild.currentResult} - Build #${currentBuild.number}",
                         body: "The pipeline has completed with result: ${currentBuild.currentResult}. Please find the build logs attached.",
-                        attachmentsPattern: logFile
+                        attachmentsPattern: logFiles.join(', ')
                     )
                 } catch (Exception e) {
                     echo "Error occurred while trying to capture and email build logs: ${e.message}"
