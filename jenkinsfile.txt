@@ -52,7 +52,8 @@ The pipeline has successfully completed all stages. Build logs are attached.
                 to: 'disadimethasa@gmail.com',
                 subject: "Pipeline Success - Build # ${currentBuild.number}",
                 body: emailBody,
-                attachmentsPattern: '**/workspace/build.log' // Adjust the pattern to match your log file
+                attachmentsPattern: '**/workspace/log'
+
             )
         }
     }
@@ -67,7 +68,8 @@ The pipeline has failed at stage ${currentBuild.currentResult}. Build logs are a
                 to: 'disadimethasa@gmail.com',
                 subject: "Pipeline Failure - Build # ${currentBuild.number}",
                 body: emailBody,
-                attachmentsPattern: '**/workspace/build.log' // Adjust the pattern to match your log file
+                attachmentsPattern: '**/workspace/log'
+
             )
         }
     }
