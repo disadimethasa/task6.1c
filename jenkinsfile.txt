@@ -4,52 +4,56 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                echo 'Maven is building you code...' 
+                echo 'Maven is building your code...'
             }
         }
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running unit tests with JavaUnit...' 
-                echo 'Running integration tests with Selenium...' 
+                echo 'Running unit tests with JavaUnit...'
+                echo 'Running integration tests with Selenium...'
             }
             post {
-        success {
-            mail to: "disadimethasa@gmail.com",
-                 subject: "Testing Success - Build # ${currentBuild.number}",
-                 body: "The pipeline has successfully completed all stages. Build logs are attached."
-        }
-        failure {
-            mail to: "disadimethasa@gmail.com",
-                 subject: "Testing Failure - Build # ${currentBuild.number}",
-                 body: "The pipeline has failed at stage ${currentStage.name}. Build logs are attached."
-        }
-    }
+                success {
+                    emailext attachLog: true,
+                             body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+                             recipientProviders: [developers(), requestor()],
+                             subject: "Unit and Integration Tests ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+                }
+                failure {
+                    emailext attachLog: true,
+                             body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+                             recipientProviders: [developers(), requestor()],
+                             subject: "Unit and Integration Tests ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+                }
+            }
         }
         stage('Code Analysis') {
             steps {
-                echo 'Analyzing code quality with SonarQube...' 
+                echo 'Analyzing code quality with SonarQube...'
             }
         }
         stage('Security Scan') {
             steps {
-                echo 'Scanning for vulnerabilities with SAST scanner..'
+                echo 'Scanning for vulnerabilities with SAST scanner...'
             }
             post {
-        success {
-            mail to: "disadimethasa@gmail.com",
-                 subject: "Security scan Success - Build # ${currentBuild.number}",
-                 body: "The pipeline has successfully completed the stage. Build logs are attached."
-        }
-        failure {
-            mail to: "disadimethasa@gmail.com",
-                 subject: "Security scan Failure - Build # ${currentBuild.number}",
-                 body: "The pipeline has failed at stage ${currentStage.name}. Build logs are attached."
-        }
-    }
+                success {
+                    emailext attachLog: true,
+                             body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+                             recipientProviders: [developers(), requestor()],
+                             subject: "Security Scan ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+                }
+                failure {
+                    emailext attachLog: true,
+                             body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+                             recipientProviders: [developers(), requestor()],
+                             subject: "Security Scan ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
+                }
+            }
         }
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying application to staging server using AWS..'
+                echo 'Deploying application to staging server using AWS...'
             }
         }
         stage('Integration Tests on Staging') {
@@ -59,22 +63,23 @@ pipeline {
         }
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying application to production server using AWS tools..'
+                echo 'Deploying application to production server using AWS tools...'
             }
         }
     }
   
     post {
         success {
-            mail to: "disadimethasa@gmail.com",
-                 subject: "Pipeline Success - Build # ${currentBuild.number}",
-                 body: "The pipeline has successfully completed all stages. Build logs are attached."
+            emailext attachLog: true,
+                     body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+                     recipientProviders: [developers(), requestor()],
+                     subject: "Pipeline ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
         }
         failure {
-            mail to: "disadimethasa@gmail.com",
-                 subject: "Pipeline Failure - Build # ${currentBuild.number}",
-                 body: "The pipeline has failed at stage ${currentStage.name}. Build logs are attached."
+            emailext attachLog: true,
+                     body: "${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\n More info at: ${env.BUILD_URL}",
+                     recipientProviders: [developers(), requestor()],
+                     subject: "Pipeline ${currentBuild.currentResult}: Job ${env.JOB_NAME}"
         }
     }
 }
-
